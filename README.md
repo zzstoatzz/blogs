@@ -19,15 +19,15 @@
 
 </details>
 
-<center>
+<div align="center">
 <img src="imgs/chasm.png" height=350/>
-</center>
+</div>
 
 <br>
 
 Hello there! I'm Nate, a junior data engineer at [SLATE](https://slateco.io) (yes, the rhyme was why I was hired).
 
-My purpose here is to give a little background on what's exciting about Airbyte to organizations like us and to demonstrate how you can extend its functionality for the Airbyte community at large or just your own use-case. Some [documentation](https://docs.airbyte.io/integrations/custom-connectors) on this exists already, but it didn't seem logically sequential for someone new to Airbyte.
+My purpose here is to give a little background on what's exciting about Airbyte to organizations like us and to demonstrate how you can extend its functionality to benefit the Airbyte community or just to suit your use-case. Some [documentation](https://docs.airbyte.io/integrations/custom-connectors) on this topic exists, but it didn't seem very sequential or comprehensive, so here we are.
 
 For more info on how to use out-of-the-box Airbyte, explore [here](https://docs.airbyte.io/).
 
@@ -35,9 +35,9 @@ For more info on how to use out-of-the-box Airbyte, explore [here](https://docs.
 
 [Airbyte](https://airbyte.io/) soft-launched in late September 2020 as an open-source data integration platform. It's backed by a friendly group of engineers, enthusiastic community contributions, and some [impressive seed funding](https://airbyte.io/articles/our-story/we-raised-a-5m-seed-round-with-accel-to-commoditize-data-integration/).
 
-<center>
+<div align="center">
 <img src="imgs/schema.png" height=400/>
-</center>
+</div>
 
 <br>
 
@@ -56,18 +56,71 @@ So, to summarize how we find Airbyte useful:
 
 Chances are that if you need for large-scale data integration, you're probably using platform to store data that Airbyte has already integrated. [Here](https://docs.airbyte.io/integrations) are full lists of sources and destinations.
 
-## I'll admit, that's cool... but I don't see the connector I want!
+### **I'll admit, that's cool... but I don't see the connector I want!**
 ..but, if you're like I was, then you need something beyond the standard integrations.
 
 Now I'll outline how to add a connector to Airbyte, based on my experience implementing [Airbyte's Smartsheets source connector](https://github.com/airbytehq/airbyte/pull/2880).
 
 If at any point you need help, feel free to reach out to the good folks in the [Airbyte slack community](https://airbyte.io/community/) or [me](mailto:nate.nowack@slateco.io).
 
-### develop a connector
-In Airbyte-speak, source and destination connectors are different things - they require a different set of steps to implement. However, I found that learning to interact with Airbyte's deployment and OOP framework took the most time, which is common to both development workflows. So hopefully you can still benefit from this article if you're here looking to make a new destination connector.
+## Develop a Connector (Python source)
+In Airbyte-speak, source and destination connectors are different things - they require a different set of steps to implement. However, I found that learning to interact with Airbyte's deployment and OOP framework took the most time, which is common to both development workflows. 
 
-#### Java
+So, hopefully you can still benefit from this article if you're here looking to make a new destination connector.
 
-#### 
+### Setup
 
+**[TO DO]**
 
+#### Java and gradlew
+
+**[TO DO]**
+
+#### Docker 
+
+**[TO DO]**
+
+#### Source Credentials
+
+**[TO DO]**
+
+### Implementation
+
+**[TO DO]**
+
+#### `spec`
+
+**[TO DO]**
+
+#### `check`
+
+**[TO DO]**
+
+#### `discover`
+
+**[TO DO]**
+
+#### `read`
+
+**[TO DO]**
+
+### Testing
+
+**[TO DO]**
+
+#### Integration Tests
+
+**[TO DO]**
+
+#### Unit Tests
+see google-sheets
+
+**[TO DO]**
+
+#### From the UI
+
+**[TO DO]**
+
+## Open a PR
+
+## Victory screech
