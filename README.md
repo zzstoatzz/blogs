@@ -15,7 +15,8 @@
         + `check()`
         + `discover()`
         + `read()`
-    + 
+    + Testing
+    
 
 </details>
 
@@ -48,7 +49,7 @@ I entered the data engineering space shortly after Airbyte came into being, and 
 
 If Airbyte wasn't around to do my job, I'd probably be writing all of our clients' ETLs in Python (maybe trying to learn Singer, Luigi, Airflow) or maybe would've become a degenerate consultant and begun advising clients that they should pay a subscription to some low-code platform that likely exceeds their use-case... looking at you, Talend.
 
-Thankfully, Airbyte does exist. At SLATE, we leverage their core ELT tool in dozens of use-cases to automatically move data at a functionally arbitrary scale, paying for nothing but the deployment of the EC2 instances that run Airbyte.
+Thankfully, Airbyte does exist. At SLATE, we leverage their core ELT tool in dozens of use-cases to automatically move data at a near-arbitrary scale, paying for nothing but the deployment of the EC2 instances that run Airbyte.
 
 So, to summarize how we find Airbyte useful:
 - Airbyte allows us to avoid the potentially unsavory hours involved in re-purposing Python code to build one-off ELTs that are fast, schedule-able, and reliable
@@ -86,7 +87,7 @@ So, hopefully you can still benefit from this article if you're here looking to 
 
 ### Implementation
 
-**[TO DO]**
+<script src="https://gist.github.com/zzstoatzz/4865b48699f8b6eda80f3dfd37d70b4a.js"></script>
 
 #### `spec`
 
