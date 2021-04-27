@@ -86,25 +86,158 @@ So, hopefully you can still benefit from this article if you're here looking to 
 **[TO DO]**
 
 ### Implementation
+While your connector's implementation is going to platform specific, all Airbyte source connectors are written as a class with the four methods outlined below.
 
-<script src="https://gist.github.com/zzstoatzz/4865b48699f8b6eda80f3dfd37d70b4a.js"></script>
+```python
+# main class definition for your source
+class SourceSmartsheets(Source):
 
-#### `spec`
+        # "check" that your credentials give a good connection to your data source
+        # e.g. Smartsheets api call on smartsheet of interest -> status 200
+    def check(self, logger, config) -> AirbyteConnectionStatus:
+        # TODO
 
-**[TO DO]**
+
+        # create your source's JSONschema catalog from column names and types
+    def discover(self, logger, config) -> AirbyteCatalog:
+        # TODO
+
+
+        # create AirbyteMessage instances for each record from your source's catalog
+    def read(self, logger, config, catalog, state) -> Generator:
+        # TODO
+
+
+```
+It's going to be helpful to check out [the docs]() during these implementations, but I'll describe where I got stuck during the process and how I got around it.
+
+#### `spec.json`
+The first file to edit in the directory that was generated is the JSON configuration specification. This where you specify what credentials an end-user would need to use your connector in Airbyte. In the case of my source connector, I'm using the Smartsheets API under the hood so users of my connector need to provide both an API token and their Smartsheet's ID.
+```json
+{
+  "documentationUrl": "https://docs.airbyte.io",
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Smartsheets Source Spec",
+    "type": "object",
+    "required": ["access_token", "spreadsheet_id"],
+    "additionalProperties": false,
+    "properties": {
+      "access_token": {
+        "title": "API Access token",
+        "description": "Found in Profile > Apps & Integrations > API Access within Smartsheet app",
+        "type": "string",
+        "airbyte_secret": true
+      },
+      "spreadsheet_id": {
+        "title": "Smartsheet ID",
+        "description": "Found in File > Properties",
+        "type": "string"
+      }
+    }
+  }
+}
+```
 
 #### `check`
+```python
+def check(self, logger: AirbyteLogger, config: json) -> AirbyteConnectionStatus:
+    try:
+        access_token = config["access_token"]
+        spreadsheet_id = config["spreadsheet_id"] + 1
 
-**[TO DO]**
+        smartsheet_client = smartsheet.Smartsheet(access_token)
+        smartsheet_client.errors_as_exceptions(True)
+        smartsheet_client.Sheets.get_sheet(spreadsheet_id)
 
+        return AirbyteConnectionStatus(status=Status.SUCCEEDED)
+    except Exception as e:
+        if isinstance(e, smartsheet.exceptions.ApiError):
+            err = e.error.result
+            code = 404 if err.code == 1006 else err.code
+            reason = f"{err.name}: {code} - {err.message} | Check your spreadsheet ID."
+        else:
+            reason = str(e)
+        logger.error(reason)
+    return AirbyteConnectionStatus(status=Status.FAILED)
+```
 #### `discover`
+```python
+def discover(self, logger: AirbyteLogger, config: json) -> AirbyteCatalog:
+    access_token = config["access_token"]
+    spreadsheet_id = config["spreadsheet_id"]
+    streams = []
 
-**[TO DO]**
+    smartsheet_client = smartsheet.Smartsheet(access_token)
+    try:
+        sheet = smartsheet_client.Sheets.get_sheet(spreadsheet_id)
+        sheet = json.loads(str(sheet))  # make it subscriptable
+        sheet_json_schema = get_json_schema(sheet)
 
+        logger.info(f"Running discovery on sheet: {sheet['name']} with {spreadsheet_id}")
+
+        try:
+            stream = AirbyteStream(name=sheet["name"], json_schema=sheet_json_schema)
+            streams.append(stream)
+        except Exception as e:
+            rec = "Check that your source's column names don't contain spaces or _"
+            logger.error(f"Stream creation failed: {str(e)} - {rec} ")
+    except Exception as e:
+        raise Exception(f"Could not run discovery: {str(e)}")
+
+    return AirbyteCatalog(streams=streams)
+```
 #### `read`
 
-**[TO DO]**
+```python
 
+def read(
+    self,
+    logger: AirbyteLogger,
+    config: json,
+    catalog: ConfiguredAirbyteCatalog,
+    state: Dict[str, any]
+) -> Generator[AirbyteMessage, None, None]:
+
+    access_token = config["access_token"]
+    spreadsheet_id = config["spreadsheet_id"]
+    smartsheet_client = smartsheet.Smartsheet(access_token)
+
+    for configured_stream in catalog.streams:
+        stream = configured_stream.stream
+        properties = stream.json_schema["properties"]
+        if isinstance(properties, list):
+            columns = tuple(key for dct in properties for key in dct.keys())
+        elif isinstance(properties, dict):
+            columns = tuple(i for i in properties.keys())
+        else:
+            logger.error("Could not read properties from the JSONschema in this stream")
+        name = stream.name
+
+        try:
+            sheet = smartsheet_client.Sheets.get_sheet(spreadsheet_id)
+            sheet = json.loads(str(sheet))  # make it subscriptable
+            logger.info(f"Starting syncing spreadsheet {sheet['name']}")
+            logger.info(f"Row count: {sheet['totalRowCount']}")
+
+            for row in sheet["rows"]:
+                values = tuple(i["value"] for i in row["cells"])
+                try:
+                    data = dict(zip(columns, values))
+
+                    yield AirbyteMessage(
+                        type=Type.RECORD,
+                        record=AirbyteRecordMessage(stream=name, data=data, emitted_at=int(datetime.now().timestamp()) * 1000),
+                    )
+                except TypeError as e:
+                    logger.error(f"{e}: BOGUS!")
+
+        except Exception as e:
+            logger.error(f"Could not read smartsheet: {name}")
+            raise e
+    logger.info(f"Finished syncing spreadsheet with ID: {spreadsheet_id}")
+
+```
 ### Testing
 
 **[TO DO]**
