@@ -1,16 +1,16 @@
 # Commoditizing data integration alongside Airbyte
 <details>
-<summary>Contents</summary>
+<summary> Table of Contents</summary>
 
 + Background
     + What and how?
     + Specific Usefulness
-+ Developing your own Python *source* connector
-    + Setup
++ [Developing your own Python *source* connector](#-Develop-a-Connector-(Python-source))
+    + [Setup](#setup)
         + Java
         + Docker
         + Credentials
-    + Implementation
+    + [Implementation](#implementation)
         + `spec()`
         + `check()`
         + `discover()`
@@ -55,7 +55,7 @@ So, to summarize how we find Airbyte useful:
 - Airbyte allows us to avoid the potentially unsavory hours involved in re-purposing Python code to build one-off ELTs that are fast, schedule-able, and reliable
 - Unlike many ELT services with subscription or usage-based pricing, Airbyte's open-source ETL engine is freely customizable and easily integrated into your own application or simple use-case.
 
-Chances are that if you need for large-scale data integration, you're probably using platform to store data that Airbyte has already integrated. [Here](https://docs.airbyte.io/integrations) are full lists of sources and destinations.
+Chances are that if you need for large-scale data integration, you're probably using a platform to store data that Airbyte handles out-of-the-box. [Here](https://docs.airbyte.io/integrations) you can find the full list of currently supported source and destination connectors.
 
 ### **I'll admit, that's cool... but I don't see the connector I want!**
 ..but, if you're like I was, then you need something beyond the standard integrations.
@@ -64,28 +64,62 @@ Now I'll outline how to add a connector to Airbyte, based on my experience imple
 
 If at any point you need help, feel free to reach out to the good folks in the [Airbyte slack community](https://airbyte.io/community/) or [me](mailto:nate.nowack@slateco.io).
 
-## Develop a Connector (Python source)
+# Develop a Connector (Python source)
 In Airbyte-speak, source and destination connectors are different things - they require a different set of steps to implement. However, I found that learning to interact with Airbyte's deployment and OOP framework took the most time, which is common to both development workflows. 
 
 So, hopefully you can still benefit from this article if you're here looking to make a new destination connector.
 
-### Setup
+## Setup
+### Gathering your Source's required Credentials
+You first need to figure out what's required to programmatically connect and retrieve information from your desired data source. In my case, I needed:
 
-**[TO DO]**
+- an API access Key that I obtained from the source platform
+- the ID of the spreadsheet that I was going to replicate
 
-#### Java and gradlew
+What's required here is entirely dependent on how you choose to connect to your source, but keep in mind that ideally it shouldn't be too difficult for an end-user to configure an instance of your connector. 
 
-**[TO DO]**
+### Development Environment
+See [here](https://docs.airbyte.io/contributing-to-airbyte/developing-locally#troubleshooting) for the setup I outline below, but only from the horse's mouth.
+- Install (if you don't have them already):
+    - [Java (version 14 or above)](https://www.java.com/en/)
+    - [npm (version 14 or above)](https://nodejs.org/en/download/)
+    - Python 3.7 or above
+    - Docker
+- Fork Airbyte's master branch
+- Clone the fork onto your machine
+- From the root directory, run the following to get started:
+```
+$ cd airbyte-integrations/connector-templates/generator
 
-#### Docker 
+$ npm install
 
-**[TO DO]**
+$ npm run generate
+```
 
-#### Source Credentials
+You'll be prompted to select a bootstrapped source-template (Python, in my case) and then name your connector. Finally, to build your template and prepare a virtual environment with the required dependencies, run the follwing:
 
-**[TO DO]**
+```
+$ cd airbyte-integrations/connectors/source-<name>
 
-### Implementation
+$ python -m venv .venv 
+
+$ source .venv/bin/activate # enable the venv
+
+$ pip install -r requirements.txt
+```
+
+
+The code scaffolding that you will need to edit now exists in a directory called `source-<yourconnectorname>` within `airbyte/airbyte-integrations/connectors/`. 
+
+
+<div align="center">
+<img src="imgs/cat.gif" height=350/>
+
+*IT'S TIME TO IMPLEMENT!*
+
+</div>
+
+## Implementation
 While your connector's implementation is going to platform specific, all Airbyte source connectors are written as a class with the four methods outlined below.
 
 ```python
@@ -93,7 +127,7 @@ While your connector's implementation is going to platform specific, all Airbyte
 class SourceSmartsheets(Source):
 
         # "check" that your credentials give a good connection to your data source
-        # e.g. Smartsheets api call on smartsheet of interest -> status 200
+
     def check(self, logger, config) -> AirbyteConnectionStatus:
         # TODO
 
@@ -103,16 +137,16 @@ class SourceSmartsheets(Source):
         # TODO
 
 
-        # create AirbyteMessage instances for each record from your source's catalog
+        # create an AirbyteMessage for each record from your source's catalog
     def read(self, logger, config, catalog, state) -> Generator:
         # TODO
 
 
 ```
-It's going to be helpful to check out [the docs]() during these implementations, but I'll describe where I got stuck during the process and how I got around it.
+It's likely going to be helpful to check out [these docs](https://docs.airbyte.io/tutorials/building-a-python-source) during these implementations, but I'll describe where I got stuck during the process and how I got around it.
 
-#### `spec.json`
-The first file to edit in the directory that was generated is the JSON configuration specification. This where you specify what credentials an end-user would need to use your connector in Airbyte. In the case of my source connector, I'm using the Smartsheets API under the hood so users of my connector need to provide both an API token and their Smartsheet's ID.
+# `spec.json`
+The first file to edit in our newly-generated directory is the JSON Schema configuration. This where you specify what credentials an end-user would need to use your connector in Airbyte. In the case of my source connector, I'm using the Smartsheets API under the hood so users of my connector need to provide both **an API token** and **their Smartsheet's ID**.
 ```json
 {
   "documentationUrl": "https://docs.airbyte.io",
@@ -138,8 +172,26 @@ The first file to edit in the directory that was generated is the JSON configura
   }
 }
 ```
+**NOTE** that the elements of the `required` list are those pieces of information an end-user of your connector would need, so if you're not using a token / ID combo like me then make sure to name these appropriately (e.g. username, password, hostname, port, etc).
 
-#### `check`
+The `description` field for each `required` will pop up as alongside its corresponding field in Airbyte during setup, so give hints for acquiring this info or direct users to what will be your documentation.
+
+There! You've implemented the first part of your new Airbyte connector. 
+
+# `check`
+Like the rest below, this function is one of those scaffolded methods of your connector's class, just waiting for you to implementat it. The `check` method is supposed to take user credentials outlined in `spec.json` and somehow check with the data source that they are valid. 
+
+If you're using an API to connect to your source, like Smartsheets or Google Sheets, the request reponse code can typically be found in the object returned by the client's `connect` method. Try:
+```python 
+print(yourClient.yourConnectionObject.__dict__)
+```
+... and see if you have a response code in there somewhere! Unless you successfully connect to the wrong source, chances are that a `200` status code in your response is what you need!
+
+If you're not using an API, you'll have to decide what constitutes a successful connection to your source. 
+
+As outlined below, that's conceptually it for this step. To follow [Airbyte best practices](https://docs.airbyte.io/contributing-to-airbyte/building-new-connector/best-practices#principles-of-developing-connectors) and wrap up this step: add exception handling,  actionable error messages for the `AirbyteLogger`, and `return` an `AirbyteConnectionStatus` object with `status` set to either `Status.SUCCEEDED` or `Status.FAILED`, depending on your definition of a "successful connection". Here's what my `check` method looked like:
+
+
 ```python
 def check(self, logger: AirbyteLogger, config: json) -> AirbyteConnectionStatus:
     try:
@@ -161,7 +213,70 @@ def check(self, logger: AirbyteLogger, config: json) -> AirbyteConnectionStatus:
         logger.error(reason)
     return AirbyteConnectionStatus(status=Status.FAILED)
 ```
-#### `discover`
+**NOTE** that one of the inputs of `check` is `config`, which you is basically a JSON object that you can assume contains the user's credentials as outlined in `spec.json`.
+# `discover`
+Next, we need to specify to Airbyte how to find column names and types from our source. To do this, we create an `AirbyteCatalog` that lists the distinct `streams` of data to be replicated by the connector.
+
+For context: 
+- the MSSQL connector has a `stream` for each selected table in the relevant database schema
+- the Google Sheets connector has a `stream` for each individual sheet within the spreadsheet
+- in my case, Smartsheets can only have one sheet, so I only had one `stream`
+
+To make a `stream`, you need a `name` and a `json_schema`. The `name` can be anything but make it descriptive, and the `json_schema` you have to setup from your knowledge of the data source's typing of columns. 
+
+Here's a sample of what a properly configured `json_schema` looks like: 
+```json
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "column1": {
+            "type": "string"
+        },
+        "column2": {
+            "type": "number"
+        }
+    }
+}
+```
+**NOTE** that the `"$schema"` key references a [JSON Schema](https://json-schema.org/) template adopted by Airbyte, so just copy that and the `"type": "object"` kev / value pair. All you need to do is figure out how to populate the `properties` object with type information for each column in a given `stream`.
+
+I used a couple helper functions to do this (shown below):
+- `get_prop` for conforming Smartsheet typing convention to [Airbyte types](https://docs.airbyte.io/architecture/basic-normalization#typing)
+- `get_json_schema` for generating the `json_schema` in the required format given the type-mapping.
+
+```python 
+# Mapping Smartsheet types to acceptable Airbyte types
+def get_prop(col_type: str) -> Dict[str, any]:
+    props = {
+        "TEXT_NUMBER": {"type": "string"},
+        "DATE": {"type": "string", "format": "date"},
+        "DATETIME": {"type": "string", "format": "date-time"},
+    }
+    if col_type in props.keys():
+        return props[col_type]
+    else:  # assume string
+        return props["TEXT_NUMBER"]
+
+# Create dictionary representing the JSON schema for this sheet
+def get_json_schema(sheet: Smartsheet) -> Dict:
+    column_info = {i["title"]: get_prop(i["type"]) for i in sheet["columns"]}
+    json_schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": column_info,
+    }
+    return json_schema
+```
+
+With the JSON Schema created, you can then instantiate an `AirbyteStream` for each distinct source of data within your configured source - if, unlike me, you have more than one per data source!
+
+Again, fail early and actionably to help out the end-user trying to use your connector. Now just `return` your fancy-schmancy `AirbyteCatalog` as shown below, and let Airbyte do the discovery from now on.
+
+**NOTE** You're going to want to test this step by printing the `json_schema` to somewhere you can check that it looks right. You can also use a `pydantic` [dataclass](https://pydantic-docs.helpmanual.io/usage/dataclasses/) if you want to specify upfront what it should look like!
+
+Here's the full `discover` method I ended up with:
+
 ```python
 def discover(self, logger: AirbyteLogger, config: json) -> AirbyteCatalog:
     access_token = config["access_token"]
@@ -177,7 +292,9 @@ def discover(self, logger: AirbyteLogger, config: json) -> AirbyteCatalog:
         logger.info(f"Running discovery on sheet: {sheet['name']} with {spreadsheet_id}")
 
         try:
-            stream = AirbyteStream(name=sheet["name"], json_schema=sheet_json_schema)
+            stream = AirbyteStream(
+                name=sheet["name"], 
+                json_schema=sheet_json_schema)
             streams.append(stream)
         except Exception as e:
             rec = "Check that your source's column names don't contain spaces or _"
@@ -187,10 +304,34 @@ def discover(self, logger: AirbyteLogger, config: json) -> AirbyteCatalog:
 
     return AirbyteCatalog(streams=streams)
 ```
-#### `read`
+Don't worry just yet about testing your methods in series, each method can be developed and tested in isolation using the provided `main_dev.py` or running the Docker-based test of that method. Both methods of iterative testing are outlined [here](https://docs.airbyte.io/tutorials/building-a-python-source#iterating-on-your-implementation).
+
+# `read`
+Here we are - this is the last method of our ` class SourceYourFancySourceName` that we have to write!
+
+Essentially, the logic here is:
+- for each stream:
+    - for each row in a stream:
+        - define a `dict` with elements like: `{column name : column's value in given row}`
+        - pass this `dict` to Airbyte as an `AirbyteRecord`
+
+For example, say that your source table has 5 records with columns names `date`, `stock_ticker`, and `price`. Then, the below is the `data` that you would need to pass to Airbyte. 
+```json
+{'date': '2020-12-15', 'stock_ticker': 'TSLA', 'price': 633.25}
+{'date': '2020-12-16', 'stock_ticker': 'TSLA', 'price': 622.77}
+{'date': '2020-12-17', 'stock_ticker': 'TSLA', 'price': 655.9}
+{'date': '2020-12-18', 'stock_ticker': 'TSLA', 'price': 695}
+{'date': '2020-12-21', 'stock_ticker': 'TSLA', 'price': 649.86}
+
+```
+How this actually happens in the Airbyte OOP framework is slightly weird, but not too difficult at all.
+
+- For each row of `data`, create an `AirbyteRecordMessage` with your stream name, `data`, and current time. 
+- Instantiate an `AirbyteRecord` by passing in your `AirbyteRecordMessage` along with it's `type` as `Type.RECORD`
+
+Below is my implementation. 
 
 ```python
-
 def read(
     self,
     logger: AirbyteLogger,
@@ -236,25 +377,53 @@ def read(
             logger.error(f"Could not read smartsheet: {name}")
             raise e
     logger.info(f"Finished syncing spreadsheet with ID: {spreadsheet_id}")
+```
+**NOTE** You might notice that I have a weird few `if` `else` blocks in there - that is just to catch `TypeError` inconsistencies between my dev environment and Airbyte's Docker-based environment. Suffice to say, try to use the Docker-based environment for iterative test and ... [don't use a mutable type as a dictionary key](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.designboom.com%2Fart%2Fthumbs-ammo-replaces-movie-guns-with-a-thumbs-up%2F&psig=AOvVaw3fwWO0qgFkWRoH51ymRGaQ&ust=1619741469993000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLCvtq2VovACFQAAAAAdAAAAABAD).
+
+<br>
+
+Congratulations! You got through all the implementation steps, it is time to test your connector!
+
+# Testing
+
+To check that your connector passes Airbyte's baseline Integration Tests, naviagte back out to the root directory and run the following:
 
 ```
-### Testing
+$ ./gradlew clean:airbyte-integrations:connectors:source-<name>:build
 
-**[TO DO]**
+$ ./gradlew clean :airbyte-integrations:connectors:source-<name>:integrationTest
+```
 
-#### Integration Tests
+This is going to package your connector into a Docker image and check your code's basic functionality and compliance with the Airbyte framework. It'll likely take a couple minutes to build your code and run all the tests. 
 
-**[TO DO]**
+If it errors out, use the prompts to run it again with a stack-trace to debug (and/or use the suggested flag to generate a helpful gradle build summary in your browser).
 
-#### Unit Tests
-see google-sheets
 
-**[TO DO]**
+### Unit Tests
+To make your connector extra robust, you can add unit tests to check your methods' functionalities. See the [Google Sheets connector's repo](https://github.com/airbytehq/airbyte/blob/master/airbyte-integrations/connectors/source-google-sheets/unit_tests/test_helpers.py) for a good reference.
 
-#### From the UI
+### Test your connector in the UI
+Before you open that PR and pop that bubbly, you might want to actually try your new connector in the Airbyte UI to make sure everything works as expected.
 
-**[TO DO]**
+[Here](https://docs.airbyte.io/tutorials/building-a-python-source#step-11-add-the-connector-to-the-api-ui) is a description that I could only make worse on how to do this.
 
-## Open a PR
+# Write Documentation
+Use another connector's documentation as a template to write your own connector's docs, focusing on the unique behaviours.
 
-## Victory screech
+Here is where the documentation files live: 
+
+```
+airbyte/docs/integrations/sources/<source-name>.md
+```
+
+# Open a merge request
+Now, you just have to open a merge request: your fork > Airbyte's master branch. Coordinate on this with Airbyte's friendly engineers - they will help you through the rest of the process.
+
+<br>
+<div align="center">
+You have now helped Airbyte improve open-source data integration!
+<img src="imgs/spongebob.jpeg" height=350/>
+
+*VICTORY SCREECH!!!*
+
+</div>
