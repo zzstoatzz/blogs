@@ -318,11 +318,11 @@ Essentially, the logic here is:
 
 For example, say that your source table has 5 records with columns names `date`, `stock_ticker`, and `price`. Then, the below is the `data` that you would need to pass to Airbyte. 
 ```json
-{'date': '2020-12-15', 'stock_ticker': 'TSLA', 'price': 633.25}
-{'date': '2020-12-16', 'stock_ticker': 'TSLA', 'price': 622.77}
-{'date': '2020-12-17', 'stock_ticker': 'TSLA', 'price': 655.9}
-{'date': '2020-12-18', 'stock_ticker': 'TSLA', 'price': 695}
-{'date': '2020-12-21', 'stock_ticker': 'TSLA', 'price': 649.86}
+{"date": "2020-12-15", "stock_ticker": "TSLA", "price": 633.25}
+{"date": "2020-12-16", "stock_ticker": "TSLA", "price": 622.77}
+{"date": "2020-12-17", "stock_ticker": "TSLA", "price": 655.9}
+{"date": "2020-12-18", "stock_ticker": "TSLA", "price": 695}
+{"date": "2020-12-21", "stock_ticker": "TSLA", "price": 649.86}
 
 ```
 How this actually happens in the Airbyte OOP framework is slightly weird, but not too difficult at all.
