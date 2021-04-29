@@ -383,7 +383,11 @@ def read(
 
 <br>
 
-Congratulations! You got through all the implementation steps, it is time to test your connector!
+You got through all the implementation steps, it is time to test your connector!
+
+<div align="center">
+<img src="imgs/pokemon.jpeg" height=400/>
+</div>
 
 # Testing
 
