@@ -121,14 +121,13 @@ The code scaffolding that you will need to edit now exists in a directory called
 </div>
 
 ## Implementation
-While your connector's implementation is going to platform specific, all Airbyte source connectors are written as a class with the four methods outlined below.
+While your connector's implementation is going to platform specific, all Airbyte source connectors are written as a class with the 3 methods outlined below.
 
 ```python
 # main class definition for your source
 class SourceSmartsheets(Source):
 
         # "check" that your credentials give a good connection to your data source
-
     def check(self, logger, config) -> AirbyteConnectionStatus:
         # TODO
 
@@ -141,7 +140,6 @@ class SourceSmartsheets(Source):
         # create an AirbyteMessage for each record from your source's catalog
     def read(self, logger, config, catalog, state) -> Generator:
         # TODO
-
 
 ```
 It's likely going to be helpful to check out [these docs](https://docs.airbyte.io/tutorials/building-a-python-source) during these implementations, but I'll describe where I got stuck during the process and how I got around it.
