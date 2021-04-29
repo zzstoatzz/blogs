@@ -15,7 +15,8 @@
         + `check()`
         + `discover()`
         + `read()`
-    + Testing
+    + [Testing](#testing)
+    + [Writing Documentation](#-Write-Documentation)
     
 
 </details>
@@ -421,7 +422,7 @@ Now, you just have to open a merge request: your fork > Airbyte's master branch.
 
 <br>
 <div align="center">
-You have now helped Airbyte improve open-source data integration!
+You have now helped Airbyte improve open-source data integration - for yourself, the world, or both!
 <img src="imgs/spongebob.jpeg" height=350/>
 
 *VICTORY SCREECH!!!*
