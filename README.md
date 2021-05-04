@@ -178,7 +178,7 @@ The `description` field for each `required` will pop up as alongside its corresp
 There! You've implemented the first part of your new Airbyte connector. 
 
 # `check`
-Like the rest below, this function is one of those scaffolded methods of your connector's class, just waiting for you to implementat it. The `check` method is supposed to take user credentials outlined in `spec.json` and somehow check with the data source that they are valid. 
+Like the rest below, this function is one of those scaffolded methods of your connector's class, just waiting for you to implement it. The `check` method is supposed to take user credentials outlined in `spec.json` and somehow check with the data source that they are valid. 
 
 If you're using an API to connect to your source, like Smartsheets or Google Sheets, the request reponse code can typically be found in the object returned by the client's `connect` method. Try:
 ```python 
