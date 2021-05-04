@@ -238,7 +238,7 @@ Here's a sample of what a properly configured `json_schema` looks like:
     }
 }
 ```
-**NOTE** that the `"$schema"` key references a [JSON Schema](https://json-schema.org/) template adopted by Airbyte, so just copy that and the `"type": "object"` kev / value pair. All you need to do is figure out how to populate the `properties` object with type information for each column in a given `stream`.
+**NOTE** that the `"$schema"` key references a [JSON Schema](https://json-schema.org/) template adopted by Airbyte, so just copy that and the `"type": "object"` key / value pair. All you need to do is figure out how to populate the `properties` object with type information for each column in a given `stream`.
 
 I used a couple helper functions to do this (shown below):
 - `get_prop` for conforming Smartsheet typing convention to [Airbyte types](https://docs.airbyte.io/architecture/basic-normalization#typing)
