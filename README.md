@@ -212,7 +212,7 @@ def check(self, logger: AirbyteLogger, config: json) -> AirbyteConnectionStatus:
         logger.error(reason)
     return AirbyteConnectionStatus(status=Status.FAILED)
 ```
-**NOTE** that one of the inputs of `check` is `config`, which you is basically a JSON object that you can assume contains the user's credentials as outlined in `spec.json`.
+**NOTE** that one of the inputs of `check` is `config`, which is basically a JSON object that you can assume contains the user's credentials as outlined in `spec.json`.
 # `discover`
 Next, we need to specify to Airbyte how to find column names and types from our source. To do this, we create an `AirbyteCatalog` that lists the distinct `streams` of data to be replicated by the connector.
 
