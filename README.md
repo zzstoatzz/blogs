@@ -48,7 +48,7 @@ Their core product, a self-hosted EL(T) engine, effectively addresses the establ
 ## Airbyte's Unique Usefulness
 I entered the data engineering space shortly after Airbyte came into being, and it seems that this coincidence has ended up drastically improving my life as a fresh lamb to the data engineering slaughter. 
 
-If Airbyte wasn't around to do my job, I'd probably be writing all of our clients' EL(T)s in Python (maybe trying to learn Singer, Luigi, Airflow) or maybe would've become a degenerate consultant and begun advising clients that they should pay a subscription to some low-code platform that likely exceeds their use-case... looking at you, Talend.
+If Airbyte wasn't around to do my job, I'd probably be writing all of our clients' EL(T)s in Python (maybe trying to learn Singer, Luigi, Airflow) or maybe would've become a consultant advises clients that they should pay a subscription to some low-code platform that likely exceeds their use-case... looking at you, Talend.
 
 Thankfully, Airbyte does exist. At SLATE, we leverage their core EL(T) tool in dozens of use-cases to automatically move data at a near-arbitrary scale, paying for nothing but the deployment of the EC2 instances that run Airbyte.
 
