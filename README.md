@@ -48,13 +48,13 @@ Their core product, a self-hosted EL(T) engine, effectively addresses the establ
 ## Airbyte's Unique Usefulness
 I entered the data engineering space shortly after Airbyte came into being, and it seems that this coincidence has ended up drastically improving my life as a fresh lamb to the data engineering slaughter. 
 
-If Airbyte wasn't around to do my job, I'd probably be writing all of our clients' ETLs in Python (maybe trying to learn Singer, Luigi, Airflow) or maybe would've become a degenerate consultant and begun advising clients that they should pay a subscription to some low-code platform that likely exceeds their use-case... looking at you, Talend.
+If Airbyte wasn't around to do my job, I'd probably be writing all of our clients' EL(T)s in Python (maybe trying to learn Singer, Luigi, Airflow) or maybe would've become a degenerate consultant and begun advising clients that they should pay a subscription to some low-code platform that likely exceeds their use-case... looking at you, Talend.
 
-Thankfully, Airbyte does exist. At SLATE, we leverage their core ELT tool in dozens of use-cases to automatically move data at a near-arbitrary scale, paying for nothing but the deployment of the EC2 instances that run Airbyte.
+Thankfully, Airbyte does exist. At SLATE, we leverage their core EL(T) tool in dozens of use-cases to automatically move data at a near-arbitrary scale, paying for nothing but the deployment of the EC2 instances that run Airbyte.
 
 So, to summarize how we find Airbyte useful:
 - Airbyte allows us to avoid the potentially unsavory hours involved in re-purposing Python code to build one-off ELTs that are fast, schedule-able, and reliable
-- Unlike many ELT services with subscription or usage-based pricing, Airbyte's open-source ETL engine is freely customizable and easily integrated into your own application or simple use-case.
+- Unlike many EL(T) platforms with subscription or usage-based pricing, Airbyte's open-source ETL engine is freely customizable and easily integrated into your own application or simple use-case.
 
 Chances are that if you need for large-scale data integration, you're probably using a platform to store data that Airbyte handles out-of-the-box. [Here](https://docs.airbyte.io/integrations) you can find the full list of currently supported source and destination connectors.
 
