@@ -127,17 +127,17 @@ While your connector's implementation is going to platform specific, all Airbyte
 # main class definition for your source
 class SourceSmartsheets(Source):
 
-        # "check" that your credentials give a good connection to your data source
+    # "check" that your credentials give a good connection to your data source
     def check(self, logger, config) -> AirbyteConnectionStatus:
         # TODO
 
 
-        # create your source's JSONschema catalog from column names and types
+    # create your source's JSONschema catalog from column names and types
     def discover(self, logger, config) -> AirbyteCatalog:
         # TODO
 
 
-        # create an AirbyteMessage for each record from your source's catalog
+    # create an AirbyteMessage for each record from your source's catalog
     def read(self, logger, config, catalog, state) -> Generator:
         # TODO
 
