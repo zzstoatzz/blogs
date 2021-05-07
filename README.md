@@ -54,7 +54,7 @@ Thankfully, Airbyte does exist. At SLATE, we leverage their core EL(T) tool in d
 
 So, to summarize how we find Airbyte useful:
 - Airbyte allows us to avoid the potentially unsavory hours involved in re-purposing Python code to build one-off ELTs that are fast, schedule-able, and reliable
-- Unlike many EL(T) platforms with subscription or usage-based pricing, Airbyte's open-source ETL engine is freely customizable and easily integrated into your own application or simple use-case.
+- Unlike many EL(T) platforms with subscription or usage-based pricing, Airbyte's open-source EL(T) engine is freely customizable and easily integrated into your own application or simple use-case.
 
 Chances are that if you need for large-scale data integration, you're probably using a platform to store data that Airbyte handles out-of-the-box. [Here](https://docs.airbyte.io/integrations) you can find the full list of currently supported source and destination connectors.
 
