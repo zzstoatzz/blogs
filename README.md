@@ -27,7 +27,7 @@
 
 <br>
 
-Hello there! I'm Nate, a junior data engineer at [SLATE](https://slateco.io) (yes, the rhyme was why I was hired).
+Hello there! I'm Nate, a data engineer at [SLATE](https://slateco.io) (yes, the rhyme was why I was hired).
 
 My purpose here is to give a little background on what's exciting about Airbyte to organizations like us and to demonstrate how you can extend its functionality to benefit the Airbyte community or just to suit your use-case. Some [documentation](https://docs.airbyte.io/integrations/custom-connectors) on this topic exists, but it didn't seem very sequential or comprehensive, so here we are.
 
